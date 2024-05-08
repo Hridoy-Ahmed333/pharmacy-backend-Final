@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const model = require("../model/medicine");
-
+const model2 = require("../model/order");
+const { response } = require("express");
 const Medicine = model.Medicine;
+const Order = model2.Order;
 
 //Adding one Document
 exports.createMedicine = async (req, res) => {
@@ -263,4 +265,140 @@ exports.searchByStock = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+// exports.getMedicineByDate = async (req, res) => {
+//   console.log("LOL");
+//   const { startDate, endDate } = req.query;
+//   const medicines = await Medicine.find();
+//   const result = await Promise.all(
+//     medicines.map(async (medicine) => {
+//       const matchingOrders = await Order.find({
+//         "medicines.name": medicine.name,
+//         date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+//       });
+//       const totalInTotal = matchingOrders.reduce((acc, order) => {
+//         const matchingMedicineInOrder = order.medicines.find(
+//           (m) => m.name === medicine.name
+//         );
+//         return (
+//           acc + (matchingMedicineInOrder ? matchingMedicineInOrder.inTotal : 0)
+//         );
+//       }, 0);
+//       return {
+//         _id: medicine._id,
+//         name: medicine.name,
+//         description: medicine.description,
+//         price: medicine.price,
+//         buyingPrice: medicine.buyingPrice,
+//         category: medicine.category,
+//         discountPercentage: medicine.discountPercentage,
+//         rating: medicine.rating,
+//         totalRating: medicine.totalRating,
+//         totalItemBuy: medicine.totalItemBuy,
+//         totalBuyMone: medicine.totalBuyMone,
+//         totalSellMoney: medicine.totalSellMoney,
+//         totalItemSold: medicine.totalItemSold,
+//         stock: medicine.stock,
+//         brand: medicine.brand,
+//         image: medicine.image,
+//         comments: medicine.comments,
+//         intotal: totalInTotal,
+//       };
+//     })
+//   );
+//   res.json(result);
+// };
+
+exports.getMedicineByDate = async (req, res) => {
+  console.log("LOL");
+  const { startDate, endDate } = req.query;
+  console.log(startDate, endDate);
+  const medicines = await Medicine.find();
+  const result = await Promise.all(
+    medicines.map(async (medicine) => {
+      // Directly filter orders based on date range and medicine name
+      const matchingOrders = await Order.find({
+        "medicines.name": medicine.name,
+        date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+      });
+
+      console.log(matchingOrders);
+
+      const totalInTotal = matchingOrders.reduce((acc, order) => {
+        const matchingMedicineInOrder = order.medicines.find(
+          (m) => m.name === medicine.name
+        );
+        return (
+          acc + (matchingMedicineInOrder ? matchingMedicineInOrder.inTotal : 0)
+        );
+      }, 0);
+      return {
+        _id: medicine._id,
+        name: medicine.name,
+        description: medicine.description,
+        price: medicine.price,
+        buyingPrice: medicine.buyingPrice,
+        category: medicine.category,
+        discountPercentage: medicine.discountPercentage,
+        rating: medicine.rating,
+        totalRating: medicine.totalRating,
+        totalItemBuy: medicine.totalItemBuy,
+        totalBuyMone: medicine.totalBuyMone,
+        totalSellMoney: medicine.totalSellMoney,
+        totalItemSold: medicine.totalItemSold,
+        stock: medicine.stock,
+        brand: medicine.brand,
+        image: medicine.image,
+        comments: medicine.comments,
+        intotal: totalInTotal,
+      };
+    })
+  );
+  res.json(result);
+};
+
+exports.getMedicineWithoutDate = async (req, res) => {
+  console.log("LOL");
+  const medicines = await Medicine.find();
+  const result = await Promise.all(
+    medicines.map(async (medicine) => {
+      // Directly filter orders based on date range and medicine name
+      const matchingOrders = await Order.find({
+        "medicines.name": medicine.name,
+      });
+
+      console.log(matchingOrders);
+
+      const totalInTotal = matchingOrders.reduce((acc, order) => {
+        const matchingMedicineInOrder = order.medicines.find(
+          (m) => m.name === medicine.name
+        );
+        return (
+          acc + (matchingMedicineInOrder ? matchingMedicineInOrder.inTotal : 0)
+        );
+      }, 0);
+      return {
+        _id: medicine._id,
+        name: medicine.name,
+        description: medicine.description,
+        price: medicine.price,
+        buyingPrice: medicine.buyingPrice,
+        category: medicine.category,
+        discountPercentage: medicine.discountPercentage,
+        rating: medicine.rating,
+        totalRating: medicine.totalRating,
+        totalItemBuy: medicine.totalItemBuy,
+        totalBuyMone: medicine.totalBuyMone,
+        totalSellMoney: medicine.totalSellMoney,
+        totalItemSold: medicine.totalItemSold,
+        stock: medicine.stock,
+        brand: medicine.brand,
+        image: medicine.image,
+        comments: medicine.comments,
+        intotal: totalInTotal,
+      };
+    })
+  );
+  res.json(result);
 };

@@ -53,6 +53,8 @@ medicineRouter
     medicineController.createMedicine
   )
   .get("/", medicineController.getAllMedicine)
+  .get("/getOrder/date", medicineController.getMedicineByDate)
+  .get("/getOrder/withoudate", medicineController.getMedicineWithoutDate)
   .get("/:id", medicineController.GetOneMedicine)
 
   .put(

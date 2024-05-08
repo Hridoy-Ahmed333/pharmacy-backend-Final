@@ -166,3 +166,25 @@ exports.updateMedicine = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
+
+exports.fetchProducts = async (req, res) => {
+  try {
+    const productIds = req.body.productIds;
+
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return res.status(400).json({ error: "Invalid or missing productIds" });
+    }
+    const idArray = productIds.map(
+      (id) => new mongoose.Types.ObjectId(String(id))
+    );
+    console.log(idArray);
+    const products = await Medicine.find({ _id: { $in: idArray } });
+    console.log(products);
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching products" });
+  }
+};
